@@ -28,8 +28,8 @@ def ml_loop(side: str):
     blocker_y = 240
     blocker_length = 30
     ball_length = 5
-    is_cal = False
-    final_x = 100
+    #is_cal = False
+    #final_x = 100
 
     def block_next(block, bd):
         if bd == True:
@@ -99,7 +99,7 @@ def ml_loop(side: str):
                             else :
                                 c_x = c_blocker - ball_length
                         else:
-                            return -1
+                            return  move_to(player = '1P',pred = 100)
                     elif (l_y+ball_length > blocker_y) and (l_y < blocker_y+20) and (c_y < blocker_y+30): #原本同障礙物y 現在下去
                                 c_speed[0] = -c_speed[0]
                                 if c_xd : #原本球往左飛
@@ -114,7 +114,7 @@ def ml_loop(side: str):
                     elif c_x <= 0:
                         c_x = 0
                         c_speed[0] = -c_speed[0]
-                    return  c_x
+                    return  move_to(player = '1P',pred = c_x)
                 else:#撞牆
                     if c_x >= 195:
                         c_x = 195
@@ -129,7 +129,7 @@ def ml_loop(side: str):
                 else:
                     c_speed[1] = int((c_frame-1)/100)+7
         else:
-            return  -1
+            return  move_to(player = '1P',pred = 100)
 
     def ml_loop_for_2P():  # as same as 1P
         if scene_info["ball_speed"][1] > 0 : 
@@ -159,8 +159,10 @@ def ml_loop(side: str):
         # 3.1. Receive the scene information sent from the game process
         scene_info = comm.recv_from_game()
         
+        """
         if(scene_info["ball_speed"][1] < 0):
-            is_cal = False
+            #is_cal = False
+        """
         
         if(scene_info["frame"] == 0):
             blocker = scene_info["blocker"][0]
@@ -201,6 +203,7 @@ def ml_loop(side: str):
             comm.send_to_game({"frame": scene_info["frame"], "command": "SERVE_TO_LEFT"})
             ball_served = True
         else:
+            """
             if side == "1P":
                 if(is_cal == True):
                     command = move_to(player = '1P',pred = final_x)
@@ -212,6 +215,9 @@ def ml_loop(side: str):
                         is_cal = True
                     else:
                         command = move_to(player = '1P',pred = 100)
+            """
+            if side == "1P":
+                command = ml_loop_for_1P()
             else:
                 command = ml_loop_for_2P()
 
